@@ -13,7 +13,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 
 load_dotenv()
-CLIENT_ID = environ.get("CLIENT_ID")
+GOOGLE_CLIENT_ID = environ.get("GOOGLE_CLIENT_ID")
 
 # to get a string like this run:
 # openssl rand -hex 32
@@ -113,7 +113,7 @@ async def login_for_access_token(
     tokenReq: TokenRequest
 ):
     try:
-        idinfo = id_token.verify_oauth2_token(tokenReq.id_token, requests.Request(), CLIENT_ID)
+        idinfo = id_token.verify_oauth2_token(tokenReq.id_token, requests.Request(), GOOGLE_CLIENT_ID)
         print(idinfo)
 
         # ID token is valid. Get the user's Google Account ID from the decoded token.
