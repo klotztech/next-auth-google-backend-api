@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from typing import Union
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import HTTPBearer
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 from pydantic import BaseModel
 from typing_extensions import Annotated
@@ -54,7 +54,7 @@ class TokenData(BaseModel):
     username: str
     email: str
 
-oauth2_scheme = HTTPBearer()
+jwt_bearer_scheme = HTTPBearer()
 
 def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None):
     to_encode = data.copy()
@@ -67,7 +67,7 @@ def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None
     return encoded_jwt
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_user(authorization: Annotated[HTTPAuthorizationCredentials, Depends(jwt_bearer_scheme)]):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -75,7 +75,10 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     )
     try:
         # Check token validity and issuer
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM], issuer=[JWT_ISSUER])
+        payload = jwt.decode(token=authorization.credentials, 
+                             key=SECRET_KEY, 
+                             algorithms=[ALGORITHM], 
+                             issuer=[JWT_ISSUER])
         
         user_id: str = payload.get("sub")
         if user_id is None:
