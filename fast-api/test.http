@@ -1,0 +1,18 @@
+GET http://localhost:8000
+
+### correct id_token
+
+POST http://localhost:8000/token
+Content-Type: application/json
+
+{"id_token":"xxxx"}
+
+### invalid id_token
+POST http://localhost:8000/token
+Content-Type: application/json
+
+{"id_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huZG9lIiwiZXhwIjoxNjg2MTY5NzAxfQ.XxWfnx9iHU1ekzwlvkB_ZoFKJeQip_mJ6OXxEelC5as"}
+
+### Make authenticated request to API
+GET http://localhost:8000/me
+Authorization: Bearer yyyy
